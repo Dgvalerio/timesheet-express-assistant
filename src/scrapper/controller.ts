@@ -1,12 +1,13 @@
 import { Scrapper } from '@/types/scrapper';
-import { getOptions } from '@/utils/chromeOptions';
-import { scrapper } from '@/utils/scrapper';
+import { PuppeteerLaunchOptions, scrapper } from '@/utils/scrapper';
 
 import axios from 'axios';
-import puppeteer, { Protocol, PuppeteerErrors } from 'puppeteer-core';
+import puppeteer, { Protocol, PuppeteerErrors } from 'puppeteer';
+
+const options: PuppeteerLaunchOptions = { args: ['--no-sandbox'] };
 
 export const signIn: Scrapper.SignIn.Handler = async (req, res) => {
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
 
   try {
@@ -54,7 +55,7 @@ export const readAppointments: Scrapper.Read.Appointments.Handler = async (
     })
   );
 
-  const browser = await puppeteer.launch(await getOptions());
+  const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
 
   try {
@@ -304,7 +305,7 @@ export const createAppointment: Scrapper.Create.Appointment.Handler = async (
     ({ name, value }) => ({ name, value })
   );
 
-  const browser = await puppeteer.launch(await getOptions());
+  const browser = await puppeteer.launch(options);
   const [page] = await browser.pages();
 
   try {

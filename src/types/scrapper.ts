@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { RequestHandler } from 'express';
-import { Protocol } from 'puppeteer-core';
+import { Protocol } from 'puppeteer';
 
 export namespace Scrapper {
   export namespace SignIn {
