@@ -30,6 +30,7 @@ export const getOptions = async (): Promise<PuppeteerLaunchOptions> =>
         headless: chrome.headless,
       }
     : {
+        args: ['--no-sandbox'],
         executablePath,
         headless: true,
       };
