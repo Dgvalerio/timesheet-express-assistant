@@ -48,6 +48,10 @@
       }
     ],
     "@typescript-eslint/no-namespace": "off",
-    "@typescript-eslint/consistent-type-definitions": ["error", "interface"]
+    "@typescript-eslint/consistent-type-definitions": [
+      "error",
+      "interface"
+    ],
+    "new-cap": "off"
   }
 }
