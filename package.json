@@ -9,8 +9,7 @@
     "prestart": "yarn build",
     "start": "node -r tsconfig-paths/register dist/index.js",
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
-    "dev": "tsnd --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
-    "tsc": "tsc"
+    "dev": "tsnd --respawn --transpile-only -r tsconfig-paths/register src/index.ts"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
