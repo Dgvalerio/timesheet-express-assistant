@@ -6,7 +6,7 @@ import axios from 'axios';
 import puppeteer, { Protocol, PuppeteerErrors } from 'puppeteer-core';
 
 export const signIn: Scrapper.SignIn.Handler = async (req, res) => {
-  const browser = await puppeteer.launch(await getOptions());
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
 
   try {
