@@ -1,4 +1,5 @@
 import indexRouter from '@/app/controller';
+import scrapperRouter from '@/scrapper/router';
 
 import express from 'express';
 import createError from 'http-errors';
@@ -10,6 +11,7 @@ app.use(logger('dev'));
 app.use(express.json());
 
 app.use('/', indexRouter);
+app.use('/scrapper', scrapperRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

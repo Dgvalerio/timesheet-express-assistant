@@ -26,9 +26,11 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "debug": "^4.3.3",
     "express": "^4.17.2",
     "http-errors": "^2.0.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "puppeteer-core": "^10.1.0"
   }
 }
