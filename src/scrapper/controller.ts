@@ -32,9 +32,23 @@ export const signIn: Scrapper.SignIn.Handler = async (req, res) => {
     res.status(200).json({ cookies });
   } catch (e) {
     console.error({ e });
-    res
-      .status(500)
-      .json({ error: `There was a login failure: ${JSON.stringify(e)}` });
+    if (
+      (<Error>e).message ===
+      'waiting for selector `.sidebar-menu` failed: timeout 3000ms exceeded'
+    ) {
+      try {
+        await page.waitForSelector('.login-container');
+        res.status(401).json({ error: `Login is invalid!` });
+      } catch (e2) {
+        res.status(500).json({
+          error: `There was a login failure: ${(<PuppeteerErrors>e2).message}`,
+        });
+      }
+    } else {
+      res.status(500).json({
+        error: `There was a login failure: ${(<PuppeteerErrors>e).message}`,
+      });
+    }
   } finally {
     await page.close();
   }
