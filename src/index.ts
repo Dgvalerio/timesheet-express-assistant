@@ -1,49 +1,64 @@
 #!/usr/bin/env node
 
-import app from '@/app/app';
+import generateAppWithBrowser from '@/app/app';
+import { PuppeteerLaunchOptions } from '@/utils/scrapper';
 
 import debug from 'debug';
 import http from 'http';
+import puppeteer from 'puppeteer';
 
-/**
- * Normalize a port into a number, string, or false.
- * @param {string} val
- * @return {boolean|string|number}
- */
-const normalizePort = (val: string): boolean | string | number => {
-  const port = parseInt(val, 10);
+// init browser
+const options: PuppeteerLaunchOptions = { args: ['--no-sandbox'] };
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+puppeteer
+  .launch(options)
+  .then((browser) => {
+    console.log('Browser ON');
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    /**
+     * Normalize a port into a number, string, or false.
+     * @param {string} val
+     * @return {boolean|string|number}
+     */
+    const normalizePort = (val: string): boolean | string | number => {
+      const port = parseInt(val, 10);
 
-  return false;
-};
+      if (isNaN(port)) {
+        // named pipe
+        return val;
+      }
 
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+      if (port >= 0) {
+        // port number
+        return port;
+      }
 
-const server = http.createServer(app);
+      return false;
+    };
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-server.listen(port);
+    const app = generateAppWithBrowser(browser);
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-const onListening = () => {
-  const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr?.port;
+    const port = normalizePort(process.env.PORT || '3000');
+    app.set('port', port);
 
-  debug('Listening on ' + bind);
-};
+    const server = http.createServer(app);
 
-server.on('listening', onListening);
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
+    server.listen(port);
+
+    /**
+     * Event listener for HTTP server "listening" event.
+     */
+    const onListening = () => {
+      const addr = server.address();
+      const bind =
+        typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr?.port;
+
+      debug('Listening on ' + bind);
+    };
+
+    server.on('listening', onListening);
+  })
+  .catch(() => console.error('Error on init browser'));

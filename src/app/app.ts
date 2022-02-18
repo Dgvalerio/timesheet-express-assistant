@@ -1,24 +1,29 @@
 import indexRouter from '@/app/controller';
-import scrapperRouter from '@/scrapper/router';
+import generateScrapperRoutes from '@/scrapper/router';
 
 import cors from 'cors';
 import express from 'express';
 import createError from 'http-errors';
 import logger from 'morgan';
+import { Browser } from 'puppeteer';
 
-const app = express();
+const generateAppWithBrowser = (browser: Browser) => {
+  const app = express();
 
-app.use(cors());
+  app.use(cors());
 
-app.use(logger('dev'));
-app.use(express.json());
+  app.use(logger('dev'));
+  app.use(express.json());
 
-app.use('/', indexRouter);
-app.use('/scrapper', scrapperRouter);
+  app.use('/', indexRouter);
+  app.use('/scrapper', generateScrapperRoutes(browser));
 
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  next(createError(404));
-});
+  // catch 404 and forward to error handler
+  app.use((req, res, next) => {
+    next(createError(404));
+  });
 
-export default app;
+  return app;
+};
+
+export default generateAppWithBrowser;

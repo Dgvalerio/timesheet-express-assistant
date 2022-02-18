@@ -6,15 +6,20 @@ import {
 } from '@/scrapper/controller';
 
 import { Router } from 'express';
+import { Browser } from 'puppeteer';
 
-const scrapperRouter = Router();
+const generateScrapperRoutes = (browser: Browser) => {
+  const scrapperRouter = Router();
 
-scrapperRouter.post('/sign-in', signIn);
+  scrapperRouter.post('/sign-in', signIn(browser));
 
-scrapperRouter.post('/read-appointments', readAppointments);
+  scrapperRouter.post('/read-appointments', readAppointments(browser));
 
-scrapperRouter.post('/read-clients', readClients);
+  scrapperRouter.post('/read-clients', readClients());
 
-scrapperRouter.post('/create-appointment', createAppointment);
+  scrapperRouter.post('/create-appointment', createAppointment(browser));
 
-export default scrapperRouter;
+  return scrapperRouter;
+};
+
+export default generateScrapperRoutes;
