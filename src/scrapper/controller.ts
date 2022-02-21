@@ -7,6 +7,7 @@ import { Browser, Protocol, PuppeteerErrors } from 'puppeteer';
 export const signIn =
   (browser: Browser): Scrapper.SignIn.Handler =>
   async (req, res) => {
+    console.log('Initiate Sign In process!');
     const page = await browser.newPage();
 
     try {
@@ -58,6 +59,7 @@ export const signIn =
 export const readAppointments =
   (browser: Browser): Scrapper.Read.Appointments.Handler =>
   async (req, res) => {
+    console.log('Initiate Read Appointments process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       return res.status(401).json({ error: `Cookies not informed` });
     }
@@ -140,6 +142,7 @@ export const readAppointments =
 
 export const readClients =
   (): Scrapper.Read.Clients.Handler => async (req, res) => {
+    console.log('Initiate Read Clients process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       return res.status(401).json({ error: `Cookies not informed` });
     }
@@ -309,6 +312,7 @@ export const readClients =
 export const createAppointment =
   (browser: Browser): Scrapper.Create.Appointment.Handler =>
   async (req, res) => {
+    console.log('Initiate Create Appointments process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       res.status(401).json({ error: `Cookies not informed` });
       return;
