@@ -331,7 +331,10 @@ export const createAppointment =
       });
       await Promise.all(loadCookies);
       await page.goto(scrapper.worksheetRead);
-      await page.waitForSelector('#tbWorksheet');
+      await page.waitForSelector('#tbWorksheet', {
+        visible: true,
+        timeout: 3000,
+      });
 
       await page.select('#IdCustomer', req.body.customer);
       await page.waitForResponse((response) =>
