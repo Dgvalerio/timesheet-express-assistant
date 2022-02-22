@@ -354,17 +354,6 @@ export const createAppointment =
 
       await page.select('#IdCategory', req.body.category);
 
-      await page.waitForSelector('#StartTime', {
-        visible: true,
-        timeout: 3000,
-      });
-      await page.click('#StartTime');
-      await page.keyboard.type(req.body.startTime);
-
-      await page.waitForSelector('#EndTime', { visible: true, timeout: 3000 });
-      await page.click('#EndTime');
-      await page.keyboard.type(req.body.endTime);
-
       await page.waitForSelector('#Description', {
         visible: true,
         timeout: 3000,
@@ -391,6 +380,17 @@ export const createAppointment =
       if (req.body.notMonetize) {
         await page.click('#NotMonetize');
       }
+
+      await page.waitForSelector('#StartTime', {
+        visible: true,
+        timeout: 3000,
+      });
+      await page.click('#StartTime');
+      await page.keyboard.type(req.body.startTime);
+
+      await page.waitForSelector('#EndTime', { visible: true, timeout: 3000 });
+      await page.click('#EndTime');
+      await page.keyboard.type(req.body.endTime);
 
       await page.click('[type="submit"]');
       await page.waitForSelector('.alert.alert-warning', { timeout: 3000 });
