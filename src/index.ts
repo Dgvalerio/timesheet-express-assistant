@@ -14,7 +14,6 @@ const options: PuppeteerLaunchOptions = {
     width: 1280,
     height: 768,
   },
-  headless: false,
 };
 
 puppeteer
