@@ -8,7 +8,14 @@ import http from 'http';
 import puppeteer from 'puppeteer';
 
 // init browser
-const options: PuppeteerLaunchOptions = { args: ['--no-sandbox'] };
+const options: PuppeteerLaunchOptions = {
+  args: ['--no-sandbox', '--window-size=1280,768'],
+  defaultViewport: {
+    width: 1280,
+    height: 768,
+  },
+  headless: false,
+};
 
 puppeteer
   .launch(options)
@@ -38,7 +45,7 @@ puppeteer
 
     const app = generateAppWithBrowser(browser);
 
-    const port = normalizePort(process.env.PORT || '3000');
+    const port = normalizePort(process.env.PORT || '3333');
     app.set('port', port);
 
     const server = http.createServer(app);
