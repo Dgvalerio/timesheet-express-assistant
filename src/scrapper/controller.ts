@@ -53,6 +53,7 @@ export const signIn =
       }
     } finally {
       await page.close();
+      console.log('Finalize Sign In process!');
     }
   };
 
@@ -137,6 +138,7 @@ export const readAppointments =
       }
     } finally {
       await page.close();
+      console.log('Finalize Read Appointments process!');
     }
   };
 
@@ -307,6 +309,7 @@ export const readClients =
     };
 
     await listClients();
+    console.log('Finalize Read Clients process!');
   };
 
 export const createAppointment =
@@ -443,5 +446,6 @@ export const createAppointment =
       }
     } finally {
       await page.close();
+      console.log('Finalize Create Appointments process!');
     }
   };
