@@ -395,6 +395,20 @@ export const createAppointment =
 
       if (
         (<Error>e).message ===
+        'waiting for selector `#tbWorksheet` failed: timeout 3000ms exceeded'
+      ) {
+        try {
+          await page.waitForSelector('.login-container');
+          res.status(401).json({ error: `Cookies are invalid!` });
+        } catch (e2) {
+          res.status(500).json({
+            error: `There was a create appointments failure: ${
+              (<PuppeteerErrors>e).message
+            }`,
+          });
+        }
+      } else if (
+        (<Error>e).message ===
         'waiting for selector `.alert.alert-warning` failed: timeout 3000ms exceeded'
       ) {
         try {
