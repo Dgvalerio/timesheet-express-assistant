@@ -394,7 +394,6 @@ export const createAppointment =
 
       await page.click('[type="submit"]');
       await page.waitForSelector('.alert.alert-warning', { timeout: 3000 });
-      await page.close();
       res.status(200).json({ data: 'Success!' });
     } catch (e) {
       console.error({ e });
