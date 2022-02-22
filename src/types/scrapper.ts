@@ -135,7 +135,7 @@ export namespace Scrapper {
         endTime: string;
         notMonetize: boolean;
         description: string;
-        commitRepository?: string;
+        commit?: string;
       }
 
       export type Response =

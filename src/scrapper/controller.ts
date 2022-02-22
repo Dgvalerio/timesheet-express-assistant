@@ -373,6 +373,15 @@ export const createAppointment =
       await page.click('#InformedDate');
       await page.keyboard.type(req.body.informedDate);
 
+      if (req.body.commit) {
+        await page.waitForSelector('#CommitRepository', {
+          visible: true,
+          timeout: 3000,
+        });
+        await page.click('#CommitRepository');
+        await page.keyboard.type(req.body.commit);
+      }
+
       if (req.body.notMonetize) {
         await page.click('#NotMonetize');
       }
