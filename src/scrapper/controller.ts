@@ -409,6 +409,7 @@ export const createAppointment =
       console.log('CreateAppointment: form submitted!');
       await page.waitForSelector('.alert.alert-warning', { timeout: 3000 });
       res.status(200).json({ data: 'Success!' });
+      console.log('CreateAppointment: Success!');
     } catch (e) {
       console.log('CreateAppointment: ok, we have a problem...');
 
@@ -422,12 +423,18 @@ export const createAppointment =
           try {
             await page.waitForSelector('.login-container');
             res.status(401).json({ error: `Cookies are invalid!` });
+            console.log('CreateAppointment: Cookies are invalid!');
           } catch (e2) {
             res.status(500).json({
               error: `There was a create appointments failure: ${
                 (<PuppeteerErrors>e).message
               }`,
             });
+            console.log(
+              `CreateAppointment: There was a create appointments failure: ${
+                (<PuppeteerErrors>e).message
+              }`
+            );
           }
           break;
         case 'waiting for selector `.alert.alert-warning` failed: timeout 3000ms exceeded':
@@ -447,12 +454,26 @@ export const createAppointment =
                     (<PuppeteerErrors>e).message
                   }`,
             });
+            console.log(
+              `CreateAppointment: ${
+                response
+                  ? response.replace(/\n[\s]+/gm, '')
+                  : `There was a create appointments failure: ${
+                      (<PuppeteerErrors>e).message
+                    }`
+              }`
+            );
           } catch (e2) {
             res.status(500).json({
               error: `There was a create appointments failure: ${
                 (<PuppeteerErrors>e2).message
               }`,
             });
+            console.log(
+              `CreateAppointment: There was a create appointments failure: ${
+                (<PuppeteerErrors>e2).message
+              }`
+            );
           }
           break;
         default:
@@ -462,6 +483,11 @@ export const createAppointment =
               (<PuppeteerErrors>e).message
             }`,
           });
+          console.log(
+            `CreateAppointment: There was a create appointments failure: ${
+              (<PuppeteerErrors>e).message
+            }`
+          );
       }
     } finally {
       await page.close();
