@@ -447,8 +447,9 @@ export const createAppointment =
               document.querySelector('.alert.alert-danger')
             );
 
+            console.log('CreateAppointment: ');
+            console.log({ el });
             const response = el?.textContent;
-            console.log('CreateAppointment: ', { response });
 
             res.status(500).json({
               error: response
