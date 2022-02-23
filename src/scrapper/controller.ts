@@ -315,17 +315,19 @@ export const readClients =
 export const createAppointment =
   (browser: Browser): Scrapper.Create.Appointment.Handler =>
   async (req, res) => {
-    console.log('Initiate Create Appointments process!');
+    console.log('CreateAppointment: Initiate Create Appointments process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       res.status(401).json({ error: `Cookies not informed` });
       return;
     }
+    console.log('CreateAppointment: Cookies are ok!');
 
     const cookies: Protocol.Network.CookieParam[] = req.body.cookies.map(
       ({ name, value }) => ({ name, value })
     );
 
     const page = await browser.newPage();
+    console.log('CreateAppointment: new page created!');
 
     try {
       await page.goto(scrapper.worksheetRead);
@@ -333,16 +335,19 @@ export const createAppointment =
         return await page.setCookie(cookie);
       });
       await Promise.all(loadCookies);
+      console.log('CreateAppointment: Cookies injected!');
       await page.goto(scrapper.worksheetRead);
       await page.waitForSelector('#tbWorksheet', {
         visible: true,
         timeout: 3000,
       });
+      console.log(`CreateAppointment: Now in ${scrapper.worksheetRead}!`);
 
       await page.select('#IdCustomer', req.body.customer);
       await page.waitForResponse((response) =>
         response.url().includes('/Worksheet/ReadProject')
       );
+      console.log('CreateAppointment: #IdCustomer typed!');
 
       await page.select('#IdProject', req.body.project);
       await page.waitForResponse((response) =>
@@ -351,8 +356,10 @@ export const createAppointment =
       await page.waitForResponse((response) =>
         response.url().includes('/Worksheet/ReadProjectProgress')
       );
+      console.log('CreateAppointment: #IdProject typed!');
 
       await page.select('#IdCategory', req.body.category);
+      console.log('CreateAppointment: #IdCategory typed!');
 
       await page.waitForSelector('#Description', {
         visible: true,
@@ -360,6 +367,7 @@ export const createAppointment =
       });
       await page.click('#Description');
       await page.keyboard.type(req.body.description);
+      console.log('CreateAppointment: #Description typed!');
 
       await page.waitForSelector('#InformedDate', {
         visible: true,
@@ -367,6 +375,7 @@ export const createAppointment =
       });
       await page.click('#InformedDate');
       await page.keyboard.type(req.body.informedDate);
+      console.log('CreateAppointment: #InformedDate typed!');
 
       if (req.body.commit) {
         await page.waitForSelector('#CommitRepository', {
@@ -375,10 +384,12 @@ export const createAppointment =
         });
         await page.click('#CommitRepository');
         await page.keyboard.type(req.body.commit);
+        console.log('CreateAppointment: #CommitRepository typed!');
       }
 
       if (req.body.notMonetize) {
         await page.click('#NotMonetize');
+        console.log('CreateAppointment: #NotMonetize checked!');
       }
 
       await page.waitForSelector('#StartTime', {
@@ -387,64 +398,73 @@ export const createAppointment =
       });
       await page.click('#StartTime');
       await page.keyboard.type(req.body.startTime);
+      console.log('CreateAppointment: #StartTime typed!');
 
       await page.waitForSelector('#EndTime', { visible: true, timeout: 3000 });
       await page.click('#EndTime');
       await page.keyboard.type(req.body.endTime);
+      console.log('CreateAppointment: #EndTime typed!');
 
       await page.click('[type="submit"]');
+      console.log('CreateAppointment: form submitted!');
       await page.waitForSelector('.alert.alert-warning', { timeout: 3000 });
       res.status(200).json({ data: 'Success!' });
     } catch (e) {
+      console.log('CreateAppointment: ok, we have a problem...');
+
       console.error({ e });
 
-      if (
-        (<Error>e).message ===
-        'waiting for selector `#tbWorksheet` failed: timeout 3000ms exceeded'
-      ) {
-        try {
-          await page.waitForSelector('.login-container');
-          res.status(401).json({ error: `Cookies are invalid!` });
-        } catch (e2) {
+      switch ((<Error>e).message) {
+        case 'waiting for selector `#tbWorksheet` failed: timeout 3000ms exceeded':
+          console.log(
+            'CreateAppointment: case waiting for selector `#tbWorksheet`'
+          );
+          try {
+            await page.waitForSelector('.login-container');
+            res.status(401).json({ error: `Cookies are invalid!` });
+          } catch (e2) {
+            res.status(500).json({
+              error: `There was a create appointments failure: ${
+                (<PuppeteerErrors>e).message
+              }`,
+            });
+          }
+          break;
+        case 'waiting for selector `.alert.alert-warning` failed: timeout 3000ms exceeded':
+          console.log(
+            'CreateAppointment: case waiting for selector `.alert.alert-warning`'
+          );
+          try {
+            await page.waitForSelector('.alert.alert-danger');
+            const response = await page.evaluate(
+              () => document.querySelector('.alert.alert-danger')?.textContent
+            );
+
+            res.status(500).json({
+              error: response
+                ? response.replace(/\n[\s]+/gm, '')
+                : `There was a create appointments failure: ${
+                    (<PuppeteerErrors>e).message
+                  }`,
+            });
+          } catch (e2) {
+            res.status(500).json({
+              error: `There was a create appointments failure: ${
+                (<PuppeteerErrors>e2).message
+              }`,
+            });
+          }
+          break;
+        default:
+          console.log('CreateAppointment: default case');
           res.status(500).json({
             error: `There was a create appointments failure: ${
               (<PuppeteerErrors>e).message
             }`,
           });
-        }
-      } else if (
-        (<Error>e).message ===
-        'waiting for selector `.alert.alert-warning` failed: timeout 3000ms exceeded'
-      ) {
-        try {
-          await page.waitForSelector('.alert.alert-danger');
-          const response = await page.evaluate(
-            () => document.querySelector('.alert.alert-danger')?.textContent
-          );
-
-          res.status(500).json({
-            error: response
-              ? response.replace(/\n[\s]+/gm, '')
-              : `There was a create appointments failure: ${
-                  (<PuppeteerErrors>e).message
-                }`,
-          });
-        } catch (e2) {
-          res.status(500).json({
-            error: `There was a create appointments failure: ${
-              (<PuppeteerErrors>e2).message
-            }`,
-          });
-        }
-      } else {
-        res.status(500).json({
-          error: `There was a create appointments failure: ${
-            (<PuppeteerErrors>e).message
-          }`,
-        });
       }
     } finally {
       await page.close();
-      console.log('Finalize Create Appointments process!');
+      console.log('CreateAppointment: Finalize Create Appointments process!');
     }
   };
