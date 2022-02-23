@@ -2,7 +2,7 @@ import { Scrapper } from '@/types/scrapper';
 import { scrapper } from '@/utils/scrapper';
 
 import axios from 'axios';
-import { Browser, Protocol, PuppeteerErrors } from 'puppeteer';
+import { Browser, Page, Protocol, PuppeteerErrors } from 'puppeteer';
 
 export const signIn =
   (browser: Browser): Scrapper.SignIn.Handler =>
@@ -312,6 +312,40 @@ export const readClients =
     console.log('Finalize Read Clients process!');
   };
 
+const checkValue = async (
+  page: Page,
+  selector: string,
+  value: string | boolean
+) => {
+  console.log(`CreateAppointment: Check value of ${selector}...`);
+  const response = await page.evaluate(
+    (aSelector, aValue) => {
+      const value = (<HTMLInputElement>document.querySelector(aSelector))[
+        typeof aValue === 'boolean' ? 'checked' : 'value'
+      ];
+
+      if (value !== aValue) {
+        if (typeof aValue === 'boolean')
+          (<HTMLInputElement>document.querySelector(aSelector)).checked =
+            aValue;
+        else
+          (<HTMLInputElement>document.querySelector(aSelector)).value = aValue;
+
+        return false;
+      }
+      return true;
+    },
+    selector,
+    value
+  );
+
+  if (response) {
+    console.log(`CreateAppointment: ${selector} typed!`);
+  } else {
+    await checkValue(page, selector, value);
+  }
+};
+
 export const createAppointment =
   (browser: Browser): Scrapper.Create.Appointment.Handler =>
   async (req, res) => {
@@ -367,7 +401,7 @@ export const createAppointment =
       });
       await page.click('#Description');
       await page.keyboard.type(req.body.description);
-      console.log('CreateAppointment: #Description typed!');
+      await checkValue(page, '#Description', req.body.description);
 
       await page.waitForSelector('#InformedDate', {
         visible: true,
@@ -375,7 +409,7 @@ export const createAppointment =
       });
       await page.click('#InformedDate');
       await page.keyboard.type(req.body.informedDate);
-      console.log('CreateAppointment: #InformedDate typed!');
+      await checkValue(page, '#InformedDate', req.body.informedDate);
 
       if (req.body.commit) {
         await page.waitForSelector('#CommitRepository', {
@@ -384,12 +418,12 @@ export const createAppointment =
         });
         await page.click('#CommitRepository');
         await page.keyboard.type(req.body.commit);
-        console.log('CreateAppointment: #CommitRepository typed!');
+        await checkValue(page, '#CommitRepository', req.body.commit);
       }
 
       if (req.body.notMonetize) {
         await page.click('#NotMonetize');
-        console.log('CreateAppointment: #NotMonetize checked!');
+        await checkValue(page, '#NotMonetize', req.body.notMonetize);
       }
 
       await page.waitForSelector('#StartTime', {
@@ -398,12 +432,12 @@ export const createAppointment =
       });
       await page.click('#StartTime');
       await page.keyboard.type(req.body.startTime);
-      console.log('CreateAppointment: #StartTime typed!');
+      await checkValue(page, '#StartTime', req.body.startTime);
 
       await page.waitForSelector('#EndTime', { visible: true, timeout: 3000 });
       await page.click('#EndTime');
       await page.keyboard.type(req.body.endTime);
-      console.log('CreateAppointment: #EndTime typed!');
+      await checkValue(page, '#EndTime', req.body.endTime);
 
       await page.click('[type="submit"]');
       console.log('CreateAppointment: form submitted!');
