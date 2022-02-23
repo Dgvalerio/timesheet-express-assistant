@@ -443,9 +443,12 @@ export const createAppointment =
           );
           try {
             await page.waitForSelector('.alert.alert-danger');
-            const response = await page.evaluate(
-              () => document.querySelector('.alert.alert-danger')?.textContent
+            const el = await page.evaluate(() =>
+              document.querySelector('.alert.alert-danger')
             );
+
+            const response = el?.textContent;
+            console.log('CreateAppointment: ', { response });
 
             res.status(500).json({
               error: response
