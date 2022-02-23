@@ -442,14 +442,13 @@ export const createAppointment =
             'CreateAppointment: case waiting for selector `.alert.alert-warning`'
           );
           try {
-            await page.waitForSelector('.alert.alert-danger');
-            const el = await page.evaluate(() =>
-              document.querySelector('.alert.alert-danger')
+            await page.waitForSelector('.alert.alert-danger', {
+              visible: true,
+              timeout: 3000,
+            });
+            const response = await page.evaluate(
+              () => document.querySelector('.alert.alert-danger')?.textContent
             );
-
-            console.log('CreateAppointment: EL');
-            console.log({ el });
-            const response = el?.textContent;
 
             res.status(500).json({
               error: response
