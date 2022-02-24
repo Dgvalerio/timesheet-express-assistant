@@ -25,6 +25,85 @@ export namespace Scrapper {
   }
 
   export namespace Read {
+    export namespace Appointment {
+      export interface Params {}
+
+      export interface Request {
+        cookies: Protocol.Network.Cookie[];
+        appointmentId: string;
+      }
+
+      export interface Appointment {
+        Worksheet: null;
+        Require: null;
+        Evaluate: null;
+        TotalRows: number;
+        PageSize: number;
+        Table: null;
+        Id: number;
+        IdRequire: null;
+        IdCustomer: number;
+        CustomerName: null;
+        IdProject: number;
+        ProjectName: null;
+        StartDate: null;
+        EndDate: null;
+        IdCell: number;
+        CellName: null;
+        IdCategory: number;
+        IdManager: number;
+        IdDeveloper: number;
+        IsMaster: boolean;
+        IdAncestor: number;
+        DeveloperName: null;
+        HourValue: null;
+        ExtraValue: null;
+        CategoryName: null;
+        InformedDate: string;
+        Created: null;
+        StartTime: string;
+        EndTime: string;
+        TotalTime: null;
+        NotMonetize: boolean;
+        Description: string;
+        CommitRepository: string | null;
+        IsDeleted: boolean;
+        TotalTimeInProject: null;
+        ConsumedTimeInProject: null;
+        IdEvaluate: null;
+        IsApprove: null;
+        IsReprove: null;
+        IsReview: null;
+        IsWait: null;
+        IsPreApproved: null;
+        TimePreApproved: null;
+        UserPreApproved: null;
+        IsPaid: boolean;
+        ConsumedTimeInProjectExceded: boolean;
+        TimeInWorksheetExceded: number;
+        IsEvaluate: boolean;
+        TypeReport: null;
+        SumTotalTime: null;
+        TotaltimeInMinutes: number;
+        IdCustomerPreSelected: null;
+        IdProjectPreSelected: null;
+        IdDeveloperPreSelected: null;
+        IsEvaluatePreSelected: boolean;
+      }
+
+      export type Response =
+        | {
+            appointment: Appointment;
+            error?: never;
+          }
+        | {
+            appointment?: never;
+            error: string;
+          };
+
+      export type Handler = RequestHandler<Params, Response, Request>;
+    }
+
     export namespace Appointments {
       export interface Params {}
 

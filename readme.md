@@ -73,6 +73,88 @@
 > }
 > </pre>
 
+### Read Appointment
+
+> `POST` _/scrapper/read-appointment_
+>
+> **Request**
+> <pre>
+> {
+>   <b>cookies</b>: Cookie[];
+>   <b>appointmentId</b>: string;
+> }
+> </pre>
+> **Response**
+>
+> _Success_
+> <pre>
+> {
+>   <b>appointment</b>: {
+>     <b>Worksheet</b>: null;
+>     <b>Require</b>: null;
+>     <b>Evaluate</b>: null;
+>     <b>TotalRows</b>: number;
+>     <b>PageSize</b>: number;
+>     <b>Table</b>: null;
+>     <b>Id</b>: number;
+>     <b>IdRequire</b>: null;
+>     <b>IdCustomer</b>: number;
+>     <b>CustomerName</b>: null;
+>     <b>IdProject</b>: number;
+>     <b>ProjectName</b>: null;
+>     <b>StartDate</b>: null;
+>     <b>EndDate</b>: null;
+>     <b>IdCell</b>: number;
+>     <b>CellName</b>: null;
+>     <b>IdCategory</b>: number;
+>     <b>IdManager</b>: number;
+>     <b>IdDeveloper</b>: number;
+>     <b>IsMaster</b>: boolean;
+>     <b>IdAncestor</b>: number;
+>     <b>DeveloperName</b>: null;
+>     <b>HourValue</b>: null;
+>     <b>ExtraValue</b>: null;
+>     <b>CategoryName</b>: null;
+>     <b>InformedDate</b>: string;
+>     <b>Created</b>: null;
+>     <b>StartTime</b>: string;
+>     <b>EndTime</b>: string;
+>     <b>TotalTime</b>: null;
+>     <b>NotMonetize</b>: boolean;
+>     <b>Description</b>: string;
+>     <b>CommitRepository</b>: string | null;
+>     <b>IsDeleted</b>: boolean;
+>     <b>TotalTimeInProject</b>: null;
+>     <b>ConsumedTimeInProject</b>: null;
+>     <b>IdEvaluate</b>: null;
+>     <b>IsApprove</b>: null;
+>     <b>IsReprove</b>: null;
+>     <b>IsReview</b>: null;
+>     <b>IsWait</b>: null;
+>     <b>IsPreApproved</b>: null;
+>     <b>TimePreApproved</b>: null;
+>     <b>UserPreApproved</b>: null;
+>     <b>IsPaid</b>: boolean;
+>     <b>ConsumedTimeInProjectExceded</b>: boolean;
+>     <b>TimeInWorksheetExceded</b>: number;
+>     <b>IsEvaluate</b>: boolean;
+>     <b>TypeReport</b>: null;
+>     <b>SumTotalTime</b>: null;
+>     <b>TotaltimeInMinutes</b>: number;
+>     <b>IdCustomerPreSelected</b>: null;
+>     <b>IdProjectPreSelected</b>: null;
+>     <b>IdDeveloperPreSelected</b>: null;
+>     <b>IsEvaluatePreSelected</b>: boolean;
+>   };
+> }
+> </pre>
+> _Error_
+> <pre>
+> {
+>   <b>error</b>: string;
+> }
+> </pre>
+
 ### Read Clients
 
 > `POST` _/scrapper/read-clients_

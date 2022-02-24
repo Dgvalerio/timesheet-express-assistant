@@ -1,5 +1,6 @@
 import {
   createAppointment,
+  readAppointment,
   readAppointments,
   readClients,
   signIn,
@@ -14,6 +15,8 @@ const generateScrapperRoutes = (browser: Browser) => {
   scrapperRouter.post('/sign-in', signIn(browser));
 
   scrapperRouter.post('/read-appointments', readAppointments(browser));
+
+  scrapperRouter.post('/read-appointment', readAppointment());
 
   scrapperRouter.post('/read-clients', readClients());
 

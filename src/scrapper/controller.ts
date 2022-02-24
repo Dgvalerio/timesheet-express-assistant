@@ -1,7 +1,7 @@
 import { Scrapper } from '@/types/scrapper';
 import { scrapper } from '@/utils/scrapper';
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Browser, Page, Protocol, PuppeteerErrors } from 'puppeteer';
 
 export const signIn =
@@ -144,6 +144,62 @@ export const readAppointments =
       await page.close();
       console.log('ReadAppointments: Finalize Read Appointments process!');
     }
+  };
+
+export const readAppointment =
+  (): Scrapper.Read.Appointment.Handler => async (req, res) => {
+    console.log('ReadAppointment: Initiate Read Appointment process!');
+    if (!req.body.cookies || req.body.cookies.length === 0) {
+      return res.status(401).json({ error: `Cookies not informed` });
+    }
+
+    const cookie: string = req.body.cookies.reduce(
+      (previous, { name, value }) => `${previous} ${name}=${value};`,
+      ''
+    );
+
+    const api = axios.create({
+      baseURL: 'https://luby-timesheet.azurewebsites.net',
+      headers: {
+        accept: 'application/json, text/javascript, */*; q=0.01',
+        'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'sec-gpc': '1',
+        'x-requested-with': 'XMLHttpRequest',
+        cookie,
+        Referer: 'https://luby-timesheet.azurewebsites.net/Worksheet/Read',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    });
+
+    /**
+     * Get Appointment
+     * @param {number} id
+     * */
+    const getAppointment = async (id: number) => {
+      try {
+        const { data } = await api.get<Scrapper.Read.Appointment.Appointment>(
+          `/Worksheet/Update?id=${id}`
+        );
+
+        res.status(200).json({ appointment: data });
+      } catch (e) {
+        console.error(
+          'Error on get appointment: ',
+          (<AxiosError>e).response?.data
+        );
+        res.status(500).json({
+          error: `Error on get appointment: ${(<AxiosError>e).response?.data}`,
+        });
+      }
+    };
+
+    await getAppointment(+req.body.appointmentId);
+
+    console.log('ReadAppointment: Finalize Read Appointment process!');
   };
 
 export const readClients =
