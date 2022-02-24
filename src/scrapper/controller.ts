@@ -60,10 +60,11 @@ export const signIn =
 export const readAppointments =
   (browser: Browser): Scrapper.Read.Appointments.Handler =>
   async (req, res) => {
-    console.log('Initiate Read Appointments process!');
+    console.log('ReadAppointments: Initiate Read Appointments process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       return res.status(401).json({ error: `Cookies not informed` });
     }
+    console.log('ReadAppointments: Cookies are ok!');
 
     const cookies: Protocol.Network.CookieParam[] = req.body.cookies.map(
       ({ name, value }) => ({
@@ -73,6 +74,7 @@ export const readAppointments =
     );
 
     const page = await browser.newPage();
+    console.log('ReadAppointments: new page created!');
 
     try {
       await page.goto(scrapper.worksheetRead);
@@ -81,10 +83,12 @@ export const readAppointments =
         return await page.setCookie(cookie);
       });
       await Promise.all(loadCookies);
+      console.log('ReadAppointments: Cookies injected!');
 
       await page.goto(scrapper.worksheetRead);
 
       await page.waitForSelector('#tbWorksheet', { timeout: 3000 });
+      console.log('ReadAppointments: Page loaded!');
 
       const appointments = await page.evaluate(() => {
         const items: Scrapper.Read.Appointments.Appointment[] = [];
@@ -138,7 +142,7 @@ export const readAppointments =
       }
     } finally {
       await page.close();
-      console.log('Finalize Read Appointments process!');
+      console.log('ReadAppointments: Finalize Read Appointments process!');
     }
   };
 
