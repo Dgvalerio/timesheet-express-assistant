@@ -122,6 +122,7 @@ export namespace Scrapper {
         descricao: string;
         naoContabilizado: boolean;
         avaliacao: string;
+        commit: string;
       }
 
       export type Response =

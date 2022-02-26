@@ -169,6 +169,7 @@ export const readAppointments =
               EndTime,
               NotMonetize,
               Description,
+              CommitRepository,
             },
           } = await api.get<Scrapper.Read.Appointment.Appointment>(
             `/Worksheet/Update?id=${appointment.id}`
@@ -185,6 +186,7 @@ export const readAppointments =
             descricao: Description,
             naoContabilizado: NotMonetize,
             avaliacao: appointment.avaliacao,
+            commit: CommitRepository,
           };
         }
       );

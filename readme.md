@@ -63,6 +63,7 @@
 >     <b>descricao</b>: string;
 >     <b>naoContabilizado</b>: boolean;
 >     <b>avaliacao</b>: string;
+>     <b>commit</b>: string;
 >  }[];
 > }
 > </pre>
