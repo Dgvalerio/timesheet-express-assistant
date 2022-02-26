@@ -119,7 +119,7 @@ export namespace Scrapper {
         data: string;
         horaInicial: string;
         horaFinal: string;
-        total: string;
+        descricao: string;
         naoContabilizado: boolean;
         avaliacao: string;
       }

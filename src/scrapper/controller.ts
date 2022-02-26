@@ -91,32 +91,108 @@ export const readAppointments =
       console.log('ReadAppointments: Page loaded!');
 
       const appointments = await page.evaluate(() => {
-        const items: Scrapper.Read.Appointments.Appointment[] = [];
+        const items: Omit<
+          Scrapper.Read.Appointments.Appointment,
+          'descricao'
+        >[] = [];
 
-        document
-          .querySelectorAll('#tbWorksheet > tbody > tr')
-          .forEach(({ children }) =>
-            items.push({
-              id: (children[9] as HTMLTableColElement)?.children[0].id,
-              cliente: (children[0] as HTMLTableColElement)?.innerText,
-              projeto: (children[1] as HTMLTableColElement)?.innerText,
-              categoria: (children[2] as HTMLTableColElement)?.innerText,
-              data: (children[3] as HTMLTableColElement)?.innerText,
-              horaInicial: (children[4] as HTMLTableColElement)?.innerText,
-              horaFinal: (children[5] as HTMLTableColElement)?.innerText,
-              total: (children[6] as HTMLTableColElement)?.innerText,
-              naoContabilizado: (
-                (children[7] as HTMLTableColElement)
-                  ?.children[0] as HTMLInputElement
-              ).checked,
-              avaliacao: (children[8] as HTMLTableColElement)?.innerText,
-            })
-          );
+        const pushItems = () =>
+          document
+            .querySelectorAll('#tbWorksheet > tbody > tr')
+            .forEach(({ children }) =>
+              items.push({
+                id: (children[9] as HTMLTableColElement)?.children[0].id,
+                cliente: (children[0] as HTMLTableColElement)?.innerText,
+                projeto: (children[1] as HTMLTableColElement)?.innerText,
+                categoria: (children[2] as HTMLTableColElement)?.innerText,
+                data: (children[3] as HTMLTableColElement)?.innerText,
+                horaInicial: (children[4] as HTMLTableColElement)?.innerText,
+                horaFinal: (children[5] as HTMLTableColElement)?.innerText,
+                naoContabilizado: (
+                  (children[7] as HTMLTableColElement)
+                    ?.children[0] as HTMLInputElement
+                ).checked,
+                avaliacao: (children[8] as HTMLTableColElement)?.innerText,
+              })
+            );
+
+        pushItems();
+
+        while (
+          !document
+            .querySelector('#tbWorksheet_next')
+            ?.classList.contains('disabled')
+        ) {
+          (<HTMLButtonElement>(
+            document.querySelector('#tbWorksheet_next')
+          ))?.click();
+
+          pushItems();
+        }
 
         return items;
       });
 
-      res.status(200).json({ appointments });
+      const cookie: string = req.body.cookies.reduce(
+        (previous, { name, value }) => `${previous} ${name}=${value};`,
+        ''
+      );
+
+      const api = axios.create({
+        baseURL: 'https://luby-timesheet.azurewebsites.net',
+        headers: {
+          accept: 'application/json, text/javascript, */*; q=0.01',
+          'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          'sec-gpc': '1',
+          'x-requested-with': 'XMLHttpRequest',
+          cookie,
+          Referer: 'https://luby-timesheet.azurewebsites.net/Worksheet/Read',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        },
+      });
+
+      const appointmentsWithDescriptionPromise = appointments.map(
+        async (appointment) => {
+          console.log(`Get data from "${appointment.id}"`);
+
+          const {
+            data: {
+              IdCustomer,
+              IdProject,
+              IdCategory,
+              InformedDate,
+              StartTime,
+              EndTime,
+              NotMonetize,
+              Description,
+            },
+          } = await api.get<Scrapper.Read.Appointment.Appointment>(
+            `/Worksheet/Update?id=${appointment.id}`
+          );
+
+          return {
+            id: appointment.id,
+            cliente: String(IdCustomer),
+            projeto: String(IdProject),
+            categoria: String(IdCategory),
+            data: InformedDate,
+            horaInicial: StartTime,
+            horaFinal: EndTime,
+            descricao: Description,
+            naoContabilizado: NotMonetize,
+            avaliacao: appointment.avaliacao,
+          };
+        }
+      );
+
+      const appointmentsWithDescription: Scrapper.Read.Appointments.Appointment[] =
+        await Promise.all(appointmentsWithDescriptionPromise);
+
+      res.status(200).json({ appointments: appointmentsWithDescription });
     } catch (e) {
       console.error({ e });
       if (

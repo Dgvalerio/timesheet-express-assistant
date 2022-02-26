@@ -60,7 +60,7 @@
 >     <b>data</b>: string;
 >     <b>horaInicial</b>: string;
 >     <b>horaFinal</b>: string;
->     <b>total</b>: string;
+>     <b>descricao</b>: string;
 >     <b>naoContabilizado</b>: boolean;
 >     <b>avaliacao</b>: string;
 >  }[];
