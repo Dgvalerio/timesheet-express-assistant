@@ -45,6 +45,7 @@
 > <pre>
 > {
 >   <b>cookies</b>: Cookie[];
+>   <b>date?</b>: string;
 > }
 > </pre>
 > **Response**

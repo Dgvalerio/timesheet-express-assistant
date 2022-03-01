@@ -90,7 +90,7 @@ export const readAppointments =
       await page.waitForSelector('#tbWorksheet', { timeout: 3000 });
       console.log('ReadAppointments: Page loaded!');
 
-      const appointments = await page.evaluate(() => {
+      let appointments = await page.evaluate(() => {
         const items: Omit<
           Scrapper.Read.Appointments.Appointment,
           'descricao' | 'commit'
@@ -132,6 +132,11 @@ export const readAppointments =
 
         return items;
       });
+
+      if (req.body.date)
+        appointments = appointments.filter(
+          ({ data }) => data === req.body.date
+        );
 
       const cookie: string = req.body.cookies.reduce(
         (previous, { name, value }) => `${previous} ${name}=${value};`,
