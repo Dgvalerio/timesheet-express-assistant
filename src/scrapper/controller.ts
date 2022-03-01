@@ -93,7 +93,7 @@ export const readAppointments =
       const appointments = await page.evaluate(() => {
         const items: Omit<
           Scrapper.Read.Appointments.Appointment,
-          'descricao'
+          'descricao' | 'commit'
         >[] = [];
 
         const pushItems = () =>
@@ -186,7 +186,7 @@ export const readAppointments =
             descricao: Description,
             naoContabilizado: NotMonetize,
             avaliacao: appointment.avaliacao,
-            commit: CommitRepository,
+            commit: CommitRepository || '',
           };
         }
       );
