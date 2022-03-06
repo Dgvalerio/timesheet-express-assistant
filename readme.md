@@ -248,3 +248,30 @@
 >   <b>error</b>: string;
 > }
 > </pre>
+
+### Read Time Interval
+
+> `POST` _/scrapper/read-time-interval_
+>
+> **Request**
+> <pre>
+> {
+>   <b>cookies</b>: Cookie[];
+>   <b>startDate</b>: string;
+>   <b>endDate</b>: string;
+> }
+> </pre>
+> **Response**
+>
+> _Success_
+> <pre>
+> {
+>   <b>interval</b>: string;
+> }
+> </pre>
+> _Error_
+> <pre>
+> {
+>   <b>error</b>: string;
+> }
+> </pre>

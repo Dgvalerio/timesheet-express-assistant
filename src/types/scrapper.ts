@@ -200,6 +200,28 @@ export namespace Scrapper {
 
       export type Handler = RequestHandler<Params, Response, Request>;
     }
+
+    export namespace TimeInterval {
+      export interface Params {}
+
+      export interface Request {
+        cookies: Protocol.Network.Cookie[];
+        startDate: string;
+        endDate: string;
+      }
+
+      export type Response =
+        | {
+            interval: string;
+            error?: never;
+          }
+        | {
+            interval?: never;
+            error: string;
+          };
+
+      export type Handler = RequestHandler<Params, Response, Request>;
+    }
   }
 
   export namespace Create {

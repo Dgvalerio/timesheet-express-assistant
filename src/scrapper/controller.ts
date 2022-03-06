@@ -8,6 +8,7 @@ export const signIn =
   (browser: Browser): Scrapper.SignIn.Handler =>
   async (req, res) => {
     console.log('Initiate Sign In process!');
+
     const page = await browser.newPage();
 
     try {
@@ -74,6 +75,7 @@ export const readAppointments =
     );
 
     const page = await browser.newPage();
+
     console.log('ReadAppointments: new page created!');
 
     try {
@@ -82,6 +84,7 @@ export const readAppointments =
       const loadCookies = cookies.map(async (cookie) => {
         return await page.setCookie(cookie);
       });
+
       await Promise.all(loadCookies);
       console.log('ReadAppointments: Cookies injected!');
 
@@ -330,6 +333,7 @@ export const readClients =
         return response.data;
       } catch (e) {
         console.error('Error on list categories: ', e);
+
         return [];
       }
     };
@@ -350,6 +354,7 @@ export const readClients =
         return response.data;
       } catch (e) {
         console.error('Error on show project progress: ', idProject);
+
         return {
           Budget: 0,
           CellName: null,
@@ -400,6 +405,7 @@ export const readClients =
         return await Promise.all(projects);
       } catch (e) {
         console.error('Error on list projects: ', e);
+
         return [];
       }
     };
@@ -427,6 +433,7 @@ export const readClients =
           } else {
             res.status(500).json({ error: 'Options not found!' });
           }
+
           return;
         }
 
@@ -455,46 +462,50 @@ export const readClients =
     console.log('Finalize Read Clients process!');
   };
 
-const checkValue = async (
-  page: Page,
-  selector: string,
-  value: string | boolean
-) => {
-  console.log(`CreateAppointment: Check value of ${selector}...`);
-  const response = await page.evaluate(
-    (aSelector, aValue) => {
-      const value = (<HTMLInputElement>document.querySelector(aSelector))[
-        typeof aValue === 'boolean' ? 'checked' : 'value'
-      ];
-
-      if (value !== aValue) {
-        if (typeof aValue === 'boolean')
-          (<HTMLInputElement>document.querySelector(aSelector)).checked =
-            aValue;
-        else
-          (<HTMLInputElement>document.querySelector(aSelector)).value = aValue;
-
-        return false;
-      }
-      return true;
-    },
-    selector,
-    value
-  );
-
-  if (response) {
-    console.log(`CreateAppointment: ${selector} typed!`);
-  } else {
-    await checkValue(page, selector, value);
-  }
-};
-
 export const createAppointment =
   (browser: Browser): Scrapper.Create.Appointment.Handler =>
   async (req, res) => {
+    const checkValue = async (
+      page: Page,
+      selector: string,
+      value: string | boolean
+    ) => {
+      console.log(`CreateAppointment: Check value of ${selector}...`);
+
+      const response = await page.evaluate(
+        (aSelector, aValue) => {
+          const value = (<HTMLInputElement>document.querySelector(aSelector))[
+            typeof aValue === 'boolean' ? 'checked' : 'value'
+          ];
+
+          if (value !== aValue) {
+            if (typeof aValue === 'boolean')
+              (<HTMLInputElement>document.querySelector(aSelector)).checked =
+                aValue;
+            else
+              (<HTMLInputElement>document.querySelector(aSelector)).value =
+                aValue;
+
+            return false;
+          }
+
+          return true;
+        },
+        selector,
+        value
+      );
+
+      if (response) {
+        console.log(`CreateAppointment: ${selector} typed!`);
+      } else {
+        await checkValue(page, selector, value);
+      }
+    };
+
     console.log('CreateAppointment: Initiate Create Appointments process!');
     if (!req.body.cookies || req.body.cookies.length === 0) {
       res.status(401).json({ error: `Cookies not informed` });
+
       return;
     }
     console.log('CreateAppointment: Cookies are ok!');
@@ -504,13 +515,16 @@ export const createAppointment =
     );
 
     const page = await browser.newPage();
+
     console.log('CreateAppointment: new page created!');
 
     try {
       await page.goto(scrapper.worksheetRead);
+
       const loadCookies = cookies.map(async (cookie) => {
         return await page.setCookie(cookie);
       });
+
       await Promise.all(loadCookies);
       console.log('CreateAppointment: Cookies injected!');
       await page.goto(scrapper.worksheetRead);
@@ -623,6 +637,7 @@ export const createAppointment =
               visible: true,
               timeout: 3000,
             });
+
             const response = await page.evaluate(
               () => document.querySelector('.alert.alert-danger')?.textContent
             );
@@ -672,5 +687,177 @@ export const createAppointment =
     } finally {
       await page.close();
       console.log('CreateAppointment: Finalize Create Appointments process!');
+    }
+  };
+
+export const readTimeInterval =
+  (browser: Browser): Scrapper.Read.TimeInterval.Handler =>
+  async (req, res) => {
+    const checkValue = async (
+      page: Page,
+      selector: string,
+      value: string | boolean
+    ) => {
+      console.log(`ReadTimeInterval: Check value of ${selector}...`);
+
+      const response = await page.evaluate(
+        (aSelector, aValue) => {
+          const value = (<HTMLInputElement>document.querySelector(aSelector))
+            .value;
+
+          if (value !== aValue) {
+            (<HTMLInputElement>document.querySelector(aSelector)).value =
+              aValue;
+
+            return false;
+          }
+
+          return true;
+        },
+        selector,
+        value
+      );
+
+      if (response) {
+        console.log(`ReadTimeInterval: ${selector} typed!`);
+      } else {
+        await checkValue(page, selector, value);
+      }
+    };
+
+    console.log('ReadTimeInterval: Initiate Get Time Interval process!');
+    if (!req.body.cookies || req.body.cookies.length === 0) {
+      res.status(401).json({ error: `Cookies not informed` });
+
+      return;
+    }
+    console.log('ReadTimeInterval: Cookies are ok!');
+
+    const cookies: Protocol.Network.CookieParam[] = req.body.cookies.map(
+      ({ name, value }) => ({ name, value })
+    );
+
+    const page = await browser.newPage();
+
+    console.log('ReadTimeInterval: new page created!');
+
+    try {
+      await page.goto(scrapper.controlPanelManagerDeveloper);
+
+      const loadCookies = cookies.map(async (cookie) => {
+        return await page.setCookie(cookie);
+      });
+
+      await Promise.all(loadCookies);
+      console.log('ReadTimeInterval: Cookies injected!');
+
+      await page.goto(scrapper.controlPanelManagerDeveloper);
+      await page.waitForSelector('form', {
+        visible: true,
+        timeout: 3000,
+      });
+      console.log(
+        `ReadTimeInterval: Now in ${scrapper.controlPanelManagerDeveloper}!`
+      );
+
+      await page.waitForSelector('#StartDate', {
+        visible: true,
+        timeout: 3000,
+      });
+      await page.click('#StartDate');
+      await page.keyboard.type(req.body.startDate);
+      await checkValue(page, '#StartDate', req.body.startDate);
+
+      await page.waitForSelector('#EndDate', { visible: true, timeout: 3000 });
+      await page.click('#EndDate');
+      await page.keyboard.type(req.body.endDate);
+      await checkValue(page, '#EndDate', req.body.endDate);
+
+      await page.click('[type="submit"]');
+      console.log('ReadTimeInterval: form submitted!');
+
+      await page.waitForSelector('#tbReport', { timeout: 3000 });
+
+      const returnedInterval = await page.evaluate(() => {
+        const item = document.querySelectorAll('#tbReport > tbody')[1];
+
+        return item.children[0].children[item.children[0].childElementCount - 2]
+          .textContent;
+      });
+
+      if (!returnedInterval) return res.status(200).json({ interval: '00:00' });
+
+      const formattedInterval = returnedInterval.replace(
+        /\(([\d]+)h([\d]+)min\)/gm,
+        (match, p1, p2) => `${p1}:${p2}`
+      );
+
+      res.status(200).json({ interval: formattedInterval });
+      console.log('ReadTimeInterval: Success!');
+    } catch (e) {
+      console.log('ReadTimeInterval: ok, we have a problem...');
+
+      console.error({ e });
+
+      switch ((<Error>e).message) {
+        case 'waiting for selector `#tbReport` failed: timeout 3000ms exceeded':
+          console.log(
+            'ReadTimeInterval: case waiting for selector `#tbReport`'
+          );
+
+          try {
+            await page.waitForSelector('.login-container');
+            res.status(401).json({ error: `Cookies are invalid!` });
+
+            console.log('ReadTimeInterval: Cookies are invalid!');
+          } catch (e2) {
+            res.status(500).json({
+              error: `There was a read time interval failure: ${
+                (<PuppeteerErrors>e).message
+              }`,
+            });
+
+            console.log(
+              `ReadTimeInterval: There was a read time interval failure: ${
+                (<PuppeteerErrors>e).message
+              }`
+            );
+          }
+          break;
+        case 'waiting for selector `form` failed: timeout 3000ms exceeded':
+          console.log('ReadTimeInterval: case waiting for selector `form`');
+          try {
+            await page.waitForSelector('.login-container');
+            res.status(401).json({ error: `Cookies are invalid!` });
+            console.log('ReadTimeInterval: Cookies are invalid!');
+          } catch (e2) {
+            res.status(500).json({
+              error: `There was a read time interval failure: ${
+                (<PuppeteerErrors>e).message
+              }`,
+            });
+            console.log(
+              `ReadTimeInterval: There was a read time interval failure: ${
+                (<PuppeteerErrors>e).message
+              }`
+            );
+          }
+          break;
+        default:
+          console.log('ReadTimeInterval: default case');
+          res.status(500).json({
+            error: `There was a create appointments failure: ${
+              (<PuppeteerErrors>e).message
+            }`,
+          });
+          console.log(
+            `ReadTimeInterval: There was a create appointments failure: ${
+              (<PuppeteerErrors>e).message
+            }`
+          );
+      }
+    } finally {
+      await page.close();
+      console.log('ReadTimeInterval: Finalize Create Appointments process!');
     }
   };

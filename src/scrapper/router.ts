@@ -3,6 +3,7 @@ import {
   readAppointment,
   readAppointments,
   readClients,
+  readTimeInterval,
   signIn,
 } from '@/scrapper/controller';
 
@@ -21,6 +22,8 @@ const generateScrapperRoutes = (browser: Browser) => {
   scrapperRouter.post('/read-clients', readClients());
 
   scrapperRouter.post('/create-appointment', createAppointment(browser));
+
+  scrapperRouter.post('/read-time-interval', readTimeInterval(browser));
 
   return scrapperRouter;
 };
